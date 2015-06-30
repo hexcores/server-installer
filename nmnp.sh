@@ -77,6 +77,8 @@ sudo php5enmod mcrypt
 
 # Enable PHP mongo
 echo 'extension=mongo.so' | sudo tee /etc/php5/mods-available/mongo.ini
+sudo ln -s /etc/php5/mods-available/mongo.ini /etc/php5/fpm/conf.d/mongo.ini
+sudo ln -s /etc/php5/mods-available/mongo.ini /etc/php5/cli/conf.d/mongo.ini
 sudo php5enmod mongo
 
 # Configure PHP Error Reporting
@@ -96,12 +98,16 @@ sudo sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/fpm/php.ini
 sudo sed -i "s/memory_limit = .*/memory_limit = 512M/" /etc/php5/cli/php.ini
 
 # Configure PHP XDebug
-sudo echo "xdebug.cli_color = 1" >> /etc/php5/fpm/conf.d/20-xdebug.ini
-sudo echo "xdebug.remote_enable = 1" >> /etc/php5/fpm/conf.d/20-xdebug.ini
-sudo echo "xdebug.remote_port = 9000" >> /etc/php5/fpm/conf.d/20-xdebug.ini
-sudo echo "xdebug.show_local_vars = 1" >> /etc/php5/fpm/conf.d/20-xdebug.ini
-sudo echo "xdebug.remote_connect_back = 1" >> /etc/php5/fpm/conf.d/20-xdebug.ini
-sudo echo "xdebug.max_nesting_level = 250" >> /etc/php5/fpm/conf.d/20-xdebug.ini
+sudo tee $(find /etc/php5 -name xdebug.ini) <<-EOF
+zend_extension=$(find /usr/lib/php5 -name xdebug.so)
+xdebug.remote_enable=1
+xdebug.remote_connect_back=1
+xdebug.remote_port=9000
+xdebug.scream=0
+xdebug.cli_color=1
+xdebug.show_local_vars=1
+xdebug.max_nesting_level=250
+EOF
 
 # Restart Nginx and PHP
 sudo service nginx restart
