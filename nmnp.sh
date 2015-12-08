@@ -4,11 +4,12 @@ echo ">>> Welcome Nginx, MongoDB, NodeJS, PHP Installer
 - Nginx
 - PHP 5.6
 - MongoDB
-- NodeJS 0.12
+- NodeJS 5.x
 - Git
 - Bower
 - Gulp
 - Composer
+- Laravel Envoy
 - Python 2.7
 - Redis
 - Memcached
@@ -64,15 +65,20 @@ sudo apt-get install -y nodejs
 sudo /usr/bin/npm install -g gulp
 sudo /usr/bin/npm install -g bower
 
+# Install Redis and Memcached
+echo ">>> Installing Redis and Memcached"
+sudo apt-get install -y redis-server memcached
+
+# Install
+sudo apt-get install -qq beanstalkd
+sudo sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
+sudo service beanstalkd start
+
 # Install PHP 5.6 and Extensions
 echo ">>> Installing PHP 5.6 and Extensions"
 sudo apt-get install -y php5-cli php5-fpm php5-dev php-pear \
 php5-apcu php5-json php5-curl php5-gd php5-imagick \
 php5-gmp php5-imap php5-mcrypt php5-xdebug php5-memcached
-
-# Install Redis and Memcached
-echo ">>> Installing Redis and Memcached"
-sudo apt-get install -y redis-server memcached
 
 # Enable PHP mcrypt for Laravel
 sudo ln -s /etc/php5/conf.d/mcrypt.ini /etc/php5/mods-available
