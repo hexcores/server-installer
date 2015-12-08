@@ -23,8 +23,8 @@ sudo apt-get -y upgrade
 # Set Locale
 echo ">>> Setting up Timezone & Locale to en_US.UTF-8"
 sudo echo "LC_ALL=en_US.UTF-8" >> /etc/default/locale
-sudo ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 sudo locale-gen en_US.UTF-8
+sudo ln -sf /usr/share/zoneinfo/UTC /etc/localtime
 
 # Install Some PPAs
 sudo apt-add-repository -y ppa:nginx/stable
@@ -48,11 +48,10 @@ sudo apt-get install -y nginx
 # Install MongoDB
 echo ">>> Installing MongoDB"
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
-echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list
+echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-3.0.list
 # Update
 sudo apt-get -y update
 sudo apt-get install -y mongodb-org
-sudo pecl install mongo
 
 # Install NodeJS
 echo ">>> Installing NodeJS, Gulp and Bower"
@@ -61,7 +60,7 @@ sudo apt-get install -y nodejs
 sudo /usr/bin/npm install -g gulp
 sudo /usr/bin/npm install -g bower
 
-# Install PHP 5.6
+# Install PHP 5.6 and Extensions
 echo ">>> Installing PHP 5.6 and Extensions"
 sudo apt-get install -y php5-cli php5-fpm php5-dev php-pear \
 php5-apcu php5-json php5-curl php5-gd php5-imagick \
@@ -75,11 +74,15 @@ sudo apt-get install -y redis-server memcached
 sudo ln -s /etc/php5/conf.d/mcrypt.ini /etc/php5/mods-available
 sudo php5enmod mcrypt
 
-# Enable PHP mongo
+
+# Install SSH Extension For PHP
+apt-get install -y libssh2-1-dev libssh2-php
+
+# Setup PHP mongo extennsion
+sudo pecl install mongo
 echo 'extension=mongo.so' | sudo tee /etc/php5/mods-available/mongo.ini
 sudo ln -s /etc/php5/mods-available/mongo.ini /etc/php5/fpm/conf.d/mongo.ini
 sudo ln -s /etc/php5/mods-available/mongo.ini /etc/php5/cli/conf.d/mongo.ini
-sudo php5enmod mongo
 
 # Configure PHP Error Reporting
 sudo sed -i "s/error_reporting = .*/error_reporting = E_ALL/" /etc/php5/fpm/php.ini
@@ -113,8 +116,19 @@ EOF
 sudo service nginx restart
 sudo service php5-fpm restart
 
+# Create SWAP
+sudo fallocate -l 1M /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+# Setup the Swap file for permanent
+echo "/swapfile   none    swap    sw    0   0" | sudo tee -a /etc/fstab
+
 # Install composer
 echo ">>> Installing Composer"
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
+
+# Install Laravel Envoy
+composer global require "laravel/envoy=~1.0"
 
