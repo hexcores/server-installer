@@ -45,6 +45,10 @@ make python2.7-dev python-pip re2c whois vim
 echo ">>> Installing Nginx Server"
 sudo apt-get install -y nginx
 
+# Prepare Blackfire
+curl -s https://packagecloud.io/gpg.key | sudo apt-key add -
+echo "deb http://packages.blackfire.io/debian any main" | sudo tee /etc/apt/sources.list.d/blackfire.list
+
 # Install MongoDB
 echo ">>> Installing MongoDB"
 sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
@@ -55,7 +59,7 @@ sudo apt-get install -y mongodb-org
 
 # Install NodeJS
 echo ">>> Installing NodeJS, Gulp and Bower"
-curl -sL https://deb.nodesource.com/setup_0.12 | sudo bash -
+curl -sL https://deb.nodesource.com/setup_5.x | sudo bash -
 sudo apt-get install -y nodejs
 sudo /usr/bin/npm install -g gulp
 sudo /usr/bin/npm install -g bower
@@ -74,6 +78,8 @@ sudo apt-get install -y redis-server memcached
 sudo ln -s /etc/php5/conf.d/mcrypt.ini /etc/php5/mods-available
 sudo php5enmod mcrypt
 
+# Install Blackfire
+sudo apt-get install -y blackfire-agent blackfire-php
 
 # Install SSH Extension For PHP
 apt-get install -y libssh2-1-dev libssh2-php
