@@ -13,6 +13,8 @@ echo ">>> Welcome Nginx, MongoDB, NodeJS, PHP Installer
 - Python 2.7
 - Redis
 - Memcached
+- Beanstalkd
+- Blackfire
 "
 
 # Update Ubuntu Packages
@@ -69,7 +71,7 @@ sudo /usr/bin/npm install -g bower
 echo ">>> Installing Redis and Memcached"
 sudo apt-get install -y redis-server memcached
 
-# Install
+# Install Beanstalkd
 sudo apt-get install -qq beanstalkd
 sudo sed -i "s/#START=yes/START=yes/" /etc/default/beanstalkd
 sudo service beanstalkd start
